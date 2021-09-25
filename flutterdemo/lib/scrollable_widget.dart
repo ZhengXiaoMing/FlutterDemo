@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ScrollableWidget extends StatefulWidget {
-  ScrollableWidget({@required GlobalKey<ScrollerState> key}) : super(key: key);
+  ScrollableWidget({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {

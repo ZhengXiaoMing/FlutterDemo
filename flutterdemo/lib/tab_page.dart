@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterdemo/scrollable_widget.dart';
 
 class TabPage extends StatefulWidget {
-  static final String route = "Tab";
+  static final String route = "TabPage";
 
   @override
   _TabPageState createState() => _TabPageState();
@@ -10,7 +10,7 @@ class TabPage extends StatefulWidget {
 
 class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
   TabController _tabController;
-  List<TabView> _tabViews = [TabView(), TabView()];
+  List<GlobalKey> _keys = [GlobalKey(), GlobalKey()];
   @override
   void initState() {
     super.initState();
@@ -19,13 +19,14 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
   }
 
   _tabControllerListener() {
-    if (_tabController.index.toDouble() != _tabController.animation.value) {
+    if (_tabController.index != _tabController.animation.value) {
       return;
     }
-    GlobalKey key = _tabViews[_tabController.previousIndex].key;
-    if (key == null || key.currentState == null) {
+    GlobalKey key = _keys[_tabController.previousIndex];
+    if (key.currentState == null) {
       return;
     }
+
     ScrollerState state = key.currentState;
     state.scrollToTop();
   }
@@ -60,8 +61,13 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
                     .toList()),
           ),
           Expanded(
-              child:
-                  TabBarView(controller: _tabController, children: _tabViews))
+              child: TabBarView(
+                  controller: _tabController,
+                  children: _keys
+                      .map((e) => TabView(
+                            key: e,
+                          ))
+                      .toList()))
         ],
       ),
     );
@@ -69,7 +75,7 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
 }
 
 class TabView extends ScrollableWidget {
-  TabView() : super(key: GlobalKey());
+  TabView({Key key}) : super(key: key);
   @override
   _TabViewState createState() => _TabViewState();
 }

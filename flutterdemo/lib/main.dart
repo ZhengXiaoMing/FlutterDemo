@@ -1,10 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutterdemo/key_page.dart';
+import 'package:flutterdemo/sort_page.dart';
 import 'package:flutterdemo/tab_page.dart';
+import 'package:flutterdemo/test_page.dart';
+
+class Person {
+  int age;
+  Person(this.age);
+
+  @override
+  bool operator ==(Object other) {
+    return other is Person && other.age == age;
+  }
+
+  @override
+  int get hashCode => age;
+}
 
 void main() {
   runApp(MyApp());
+
+  var number1 = Person(1);
+  var number2 = Person(1);
+
+  print("identical = ${identical(number1, number2)}");
+
+  var key1 = ValueKey(number1);
+  var key2 = ValueKey(number2);
+  print("equals = ${key1 == key2}");
 }
+
+Map<String, Widget Function(BuildContext context)> _routes = {
+  TabPage.route: (_) => TabPage(),
+  KeyPage.route: (_) => KeyPage(),
+  SortPage.route: (_) => SortPage(),
+  TestPage.route: (_) => TestPage(),
+};
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -12,10 +43,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      routes: {
-        TabPage.route: (_) => TabPage(),
-        KeyPage.route: (_) => KeyPage()
-      },
+      routes: _routes,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -52,7 +80,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> types = ["TabPage", "KeyPage"];
+  List<String> routes = _routes.keys.toList();
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -69,14 +97,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView.separated(
           itemBuilder: (context, index) {
+            var route = routes[index];
             return ListTile(
-              title: Text(types[index]),
+              title: Text(route),
               onTap: () {
-                if (index == 0) {
-                  Navigator.of(context).pushNamed(TabPage.route);
-                } else if (index == 1) {
-                  Navigator.of(context).pushNamed(KeyPage.route);
-                }
+                Navigator.of(context).pushNamed(route);
               },
             );
           },
@@ -85,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 1,
             );
           },
-          itemCount: 2),
+          itemCount: routes.length),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         tooltip: 'Increment',
